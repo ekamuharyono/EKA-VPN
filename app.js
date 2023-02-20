@@ -1,4 +1,7 @@
 import TelegramBot from "node-telegram-bot-api"
+
+import { RouterOSClient } from 'routeros-client';
+
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -7,6 +10,14 @@ import { responStart } from './responses.js' // import file berisi responses
 const token = process.env.TELEGRAM_BOT_TOKEN  // ambil token bot telegram dari .env
 
 const bot = new TelegramBot(token, { polling: true }) // initialize bot telegram
+
+// SETUP ROUTEROS-CLIENT
+const api = new RouterOSClient({
+    host: process.env.IP_CHR,
+    user: process.env.LOGIN_CHR,
+    password: process.env.PASSWORD_CHR,
+    port: 8728,
+});
 
 // MAIN CODE
 bot.on('message', (msg) => {
