@@ -2,7 +2,7 @@ import TelegramBot from "node-telegram-bot-api"
 import * as dotenv from 'dotenv'
 dotenv.config()
 
-import { responBadFromat, responInvalidData, responStart, responWait } from './responses.js' // import file berisi responses
+import { responBadFormat, responInvalidData, responStart, responWait } from './responses.js' // import file berisi responses
 
 const token = process.env.TELEGRAM_BOT_TOKEN  // ambil token bot telegram dari .env
 
@@ -63,12 +63,12 @@ bot.on('message', (msg) => {
             if (user && pass) {
 
                 // jika data lengkap, lakukan validasi
-                return bot.sendMessage(chatId, responWait())
+                return bot.sendMessage(chatId, responWait(user))
 
             } else {
 
                 // jika user memasukan data tidak lengkap
-                return bot.sendMessage(chatId, responBadFromat())
+                return bot.sendMessage(chatId, responBadFormat())
 
             }
 
