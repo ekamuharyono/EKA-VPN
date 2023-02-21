@@ -22,3 +22,15 @@ Open Reseller!!!
 📞 WA : wa.me/6282153393216
 🍹 Donasi : saweria.co/ekamhryn`
 }
+
+export const responWait = (input) => {
+  return `Silahkan Tunggu sedang mencari user ${input}`
+}
+
+export const responInvalidData = () => {
+  return 'Anda tidak memasukan user dan password'
+}
+
+export const responBadFormat = () => {
+  return "Masukan data dengan format yang benar"
+}

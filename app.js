@@ -1,12 +1,25 @@
 import TelegramBot from "node-telegram-bot-api"
+
+import { RouterOSClient } from 'routeros-client';
+
+
+
 import * as dotenv from 'dotenv'
 dotenv.config()
 
-import { responStart } from './responses.js' // import file berisi responses
+import { responBadFormat, responInvalidData, responStart, responWait } from './responses.js' // import file berisi responses
 
 const token = process.env.TELEGRAM_BOT_TOKEN  // ambil token bot telegram dari .env
 
 const bot = new TelegramBot(token, { polling: true }) // initialize bot telegram
+
+
+const api = new RouterOSClient({
+    host: process.env.IP_CHR,
+    user: process.env.LOGIN_CHR,
+    password: process.env.PASSWORD_CHR,
+    port: 8728,
+});
 
 // MAIN CODE
 bot.on('message', (msg) => {
@@ -30,7 +43,7 @@ bot.on('message', (msg) => {
             let input = message[1].split('.') // data yg diinput user
 
             // jika user memasukan data
-            return bot.sendMessage(chatId, `Silahkan Tunggu sedang mencari user ${input}`)
+            return bot.sendMessage(chatId, responWait(input))
 
             // validasi data yg di inputkan terdaftar atau tidak
 
@@ -41,7 +54,7 @@ bot.on('message', (msg) => {
         } else {
 
             // Jika user tidak memasukan username
-            bot.sendMessage(chatId, 'Anda tidak memasukan user dan password')
+            bot.sendMessage(chatId, responInvalidData())
 
         }
 
@@ -63,19 +76,19 @@ bot.on('message', (msg) => {
             if (user && pass) {
 
                 // jika data lengkap, lakukan validasi
-                return bot.sendMessage(chatId, `Silahkan Tunggu ... `)
+                return bot.sendMessage(chatId, responWait(user))
 
             } else {
 
                 // jika user memasukan data tidak lengkap
-                return bot.sendMessage(chatId, "Masukan data dengan format yang benar")
+                return bot.sendMessage(chatId, responBadFormat())
 
             }
 
         } else {
 
             // JIka user tidak memasukan data input
-            return bot.sendMessage(chatId, 'Anda tidak memasukan username dan password')
+            return bot.sendMessage(chatId, responInvalidData())
 
         }
 
