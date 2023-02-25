@@ -11,12 +11,78 @@ const token = process.env.TELEGRAM_BOT_TOKEN  // ambil token bot telegram dari .
 
 const bot = new TelegramBot(token, { polling: true }) // initialize bot telegram
 
-const api = new RouterOSClient({
-    host: process.env.IP_CHR,
-    user: process.env.LOGIN_CHR,
-    password: process.env.PASSWORD_CHR,
-    port: process.env.PORT_CHR,
-});
+const createNat = (vpnuser, vpnpassword, chatId) => {
+
+    const api = new RouterOSClient({
+        host: process.env.IP_CHR,
+        user: process.env.LOGIN_CHR,
+        password: process.env.PASSWORD_CHR,
+        port: process.env.PORT_CHR,
+    });
+
+    api.connect().then((client) => {
+
+        client.menu("/ppp secret").add({
+            name: vpnuser,
+            password: vpnpassword,
+            service: "l2tp",
+            localAddress: "172.10.0.1",
+            remoteAddress: "172.10.0.2"
+        }).then((result) => {
+            api.close();
+            return bot.sendMessage(chatId, `berhasil membuat akun ${vpnuser}`)
+
+        }).catch((err) => {
+            console.log(err); // Some error trying to get the identity
+        });
+
+        // client.menu("/ip firewall nat").add({
+        //     chain: "dst-nat",
+        //     dstAddress: process.env.IP_CHR,
+        //     protocol: "tcp",
+        //     dstPort: 1000,
+        //     action: "dst-nat",
+        //     toAddresses: "172.10.0.2",
+        //     toPorts: 8291
+        // }).then((result) => {
+        //     console.log(result); // Mikrotik
+        //     api.close();
+
+        // }).catch((err) => {
+        //     console.log(err); // Some error trying to get the identity
+        // });
+
+    }).catch((err) => {
+        // Connection error
+        console.log('koneksi eror')
+    });
+
+    //     natMenu.add({
+    //         chain: "dst-nat",
+    //         dstAddress: process.env.IP_CHR,
+    //         protocol: "tcp",
+    //         dstPort: 1000,
+    //         action: "dst-nat",
+    //         toAddress: "172.10.0.2",
+    //         dstPort: 80
+    //     }).then((response) => {
+    //         // response should be an object like { ret: "*3C" }
+    //         return bot.sendMessage(chatId, 'user berhasil dibuat')
+
+    //     }).then((response) => {
+    //         // response should be an empty array [] since, 
+    //         // if there is no error, updates return nothing, meaning success
+    //         api.close();
+    //         return bot.sendMessage(chatId, 'user berhasil dibuat 123123')
+    //     }).catch((err) => {
+    //         // error adding or eiditing
+    //     });
+
+    // }).catch((err) => {
+    //     // Connection error
+    // });
+}
+
 
 // MAIN CODE
 bot.on('message', (msg) => {
@@ -25,6 +91,24 @@ bot.on('message', (msg) => {
 
     //  HANDLE COMMAND START
     if (msg.text.includes('/start')) {
+
+        // api.connect().then((client) => {
+        //     // After connecting, the promise will return a client class so you can start using it
+
+        //     // You can either use spaces like the winbox terminal or
+        //     // use the way the api does like "/system/identity", either way is fine
+        //     client.menu("/system identity").getOnly().then((result) => {
+        //         console.log(result.name); // Mikrotik
+        //         api.close();
+
+        //     }).catch((err) => {
+        //         console.log(err); // Some error trying to get the identity
+        //     });
+
+        // }).catch((err) => {
+        //     // Connection error
+        //     console.log('koneksi eror')
+        // });
 
         return bot.sendMessage(chatId, responStart()) // Show help info
 
@@ -74,26 +158,8 @@ bot.on('message', (msg) => {
 
                 // jika data lengkap, lakukan validasi
                 bot.sendMessage(chatId, responWait(user))
+                createNat(user, pass, chatId)
 
-                api.connect().then((client) => {
-
-                    client.menu("/ppp secret").add({
-                        name: user,
-                        password: pass,
-                        service: "l2tp",
-                        localAddress: "172.10.0.1",
-                        remoteAddress: "172.10.0.2"
-                    }).then((result) => {
-                        bot.sendMessage(chatId, `berhasil membuat akun ${user}`)
-                        api.close();
-
-                    }).catch((err) => {
-                        console.log(err); // Some error trying to get the identity
-                    });
-                }).catch((err) => {
-                    // Connection error
-                    console.log('koneksi eror')
-                });
 
             } else {
 
