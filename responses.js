@@ -28,7 +28,7 @@ export const responWait = (input) => {
 }
 
 export const responInvalidData = () => {
-  return 'Anda tidak memasukan user dan password'
+  return 'Invalid Data!'
 }
 
 export const responBadFormat = () => {

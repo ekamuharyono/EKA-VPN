@@ -2,8 +2,6 @@ import TelegramBot from "node-telegram-bot-api"
 
 import { RouterOSClient } from 'routeros-client';
 
-
-
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -13,12 +11,11 @@ const token = process.env.TELEGRAM_BOT_TOKEN  // ambil token bot telegram dari .
 
 const bot = new TelegramBot(token, { polling: true }) // initialize bot telegram
 
-
 const api = new RouterOSClient({
     host: process.env.IP_CHR,
     user: process.env.LOGIN_CHR,
     password: process.env.PASSWORD_CHR,
-    port: 8728,
+    port: process.env.PORT_CHR,
 });
 
 // MAIN CODE
@@ -76,7 +73,27 @@ bot.on('message', (msg) => {
             if (user && pass) {
 
                 // jika data lengkap, lakukan validasi
-                return bot.sendMessage(chatId, responWait(user))
+                bot.sendMessage(chatId, responWait(user))
+
+                api.connect().then((client) => {
+
+                    client.menu("/ppp secret").add({
+                        name: user,
+                        password: pass,
+                        service: "l2tp",
+                        localAddress: "172.10.0.1",
+                        remoteAddress: "172.10.0.2"
+                    }).then((result) => {
+                        bot.sendMessage(chatId, `berhasil membuat akun ${user}`)
+                        api.close();
+
+                    }).catch((err) => {
+                        console.log(err); // Some error trying to get the identity
+                    });
+                }).catch((err) => {
+                    // Connection error
+                    console.log('koneksi eror')
+                });
 
             } else {
 
