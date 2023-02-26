@@ -11,12 +11,57 @@ const token = process.env.TELEGRAM_BOT_TOKEN  // ambil token bot telegram dari .
 
 const bot = new TelegramBot(token, { polling: true }) // initialize bot telegram
 
+// var akun = {}
+
 const api = new RouterOSClient({
     host: process.env.IP_CHR,
     user: process.env.LOGIN_CHR,
     password: process.env.PASSWORD_CHR,
     port: process.env.PORT_CHR,
 });
+
+const cekUser = (user) => {
+    // let akun;
+
+    const api = new RouterOSClient({
+        host: process.env.IP_CHR,
+        user: process.env.LOGIN_CHR,
+        password: process.env.PASSWORD_CHR,
+        port: process.env.PORT_CHR,
+    });
+    api.connect().then((client) => {
+        client.menu("/ppp secret").find({
+            name: user
+        }).then((result) => {
+
+            api.close()
+            console.log(result)
+        }).catch((err) => console.log(err))
+    }).catch(err => console.log(err))
+    // return akun
+}
+
+const createUser = (user, pass, api) => {
+    api.connect().then((client) => {
+
+        client.menu("/ppp secret").add({
+            name: user,
+            password: pass,
+            service: "l2tp",
+            localAddress: "172.10.0.1",
+            remoteAddress: "172.10.0.2"
+        }).then((result) => {
+            // bot.sendMessage(chatId, `berhasil membuat akun ${user}`)
+            api.close();
+
+        }).catch((err) => {
+            console.log(err); // Some error trying to get the identity
+        });
+    }).catch((err) => {
+        // Connection error
+        console.log('koneksi eror')
+    });
+}
 
 // MAIN CODE
 bot.on('message', (msg) => {
@@ -40,10 +85,11 @@ bot.on('message', (msg) => {
             let input = message[1].split('.') // data yg diinput user
 
             // jika user memasukan data
-            return bot.sendMessage(chatId, responWait(input))
+            bot.sendMessage(chatId, responWait(input))
 
             // validasi data yg di inputkan terdaftar atau tidak
-
+            // console.log(akun)
+            cekUser(input)
             // jika user ditemukan
 
             // jika user tidak ditemukan
@@ -74,26 +120,13 @@ bot.on('message', (msg) => {
 
                 // jika data lengkap, lakukan validasi
                 bot.sendMessage(chatId, responWait(user))
+                try {
+                    createUser(user, pass, api, chatId)
+                    return bot.sendMessage(chatId, `berhasil membuat akun ${user}`)
 
-                api.connect().then((client) => {
+                } catch (error) {
 
-                    client.menu("/ppp secret").add({
-                        name: user,
-                        password: pass,
-                        service: "l2tp",
-                        localAddress: "172.10.0.1",
-                        remoteAddress: "172.10.0.2"
-                    }).then((result) => {
-                        bot.sendMessage(chatId, `berhasil membuat akun ${user}`)
-                        api.close();
-
-                    }).catch((err) => {
-                        console.log(err); // Some error trying to get the identity
-                    });
-                }).catch((err) => {
-                    // Connection error
-                    console.log('koneksi eror')
-                });
+                }
 
             } else {
 
