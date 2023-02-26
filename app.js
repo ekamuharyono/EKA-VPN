@@ -11,58 +11,56 @@ const token = process.env.TELEGRAM_BOT_TOKEN  // ambil token bot telegram dari .
 
 const bot = new TelegramBot(token, { polling: true }) // initialize bot telegram
 
-// var akun = {}
+let akun;
 
-const api = new RouterOSClient({
-    host: process.env.IP_CHR,
-    user: process.env.LOGIN_CHR,
-    password: process.env.PASSWORD_CHR,
-    port: process.env.PORT_CHR,
-});
-
-const cekUser = (user) => {
-    // let akun;
-
+const cekUser = async (user) => {
     const api = new RouterOSClient({
         host: process.env.IP_CHR,
         user: process.env.LOGIN_CHR,
         password: process.env.PASSWORD_CHR,
         port: process.env.PORT_CHR,
     });
-    api.connect().then((client) => {
-        client.menu("/ppp secret").find({
-            name: user
-        }).then((result) => {
 
-            api.close()
-            console.log(result)
-        }).catch((err) => console.log(err))
-    }).catch(err => console.log(err))
-    // return akun
-}
+    try {
+        const client = await api.connect();
+        akun = await client.menu('/ppp secret').find({
+            name: user,
+        });
 
-const createUser = (user, pass, api) => {
-    api.connect().then((client) => {
+        api.close();
+        return akun
+    } catch (err) {
+        console.log(err);
+    }
+};
 
-        client.menu("/ppp secret").add({
+
+const createUser = async (user, pass) => {
+    const api = new RouterOSClient({
+        host: process.env.IP_CHR,
+        user: process.env.LOGIN_CHR,
+        password: process.env.PASSWORD_CHR,
+        port: process.env.PORT_CHR,
+    });
+
+    try {
+        const client = await api.connect();
+
+        const result = await client.menu('/ppp secret').add({
             name: user,
             password: pass,
-            service: "l2tp",
-            localAddress: "172.10.0.1",
-            remoteAddress: "172.10.0.2"
-        }).then((result) => {
-            // bot.sendMessage(chatId, `berhasil membuat akun ${user}`)
-            api.close();
-
-        }).catch((err) => {
-            console.log(err); // Some error trying to get the identity
+            service: 'l2tp',
+            localAddress: '172.10.0.1',
+            remoteAddress: '172.10.0.2',
         });
-    }).catch((err) => {
-        // Connection error
-        console.log('koneksi eror')
-    });
-}
 
+        console.log(result.remoteAddress) // bisa langsung dapat berapa ip nya remote nya
+        api.close();
+    } catch (err) {
+        console.log(err);
+        // return
+    }
+};
 // MAIN CODE
 bot.on('message', (msg) => {
 
@@ -82,14 +80,15 @@ bot.on('message', (msg) => {
         if (msg.text.length > 4) {
 
             const message = msg.text.split(' ')
-            let input = message[1].split('.') // data yg diinput user
-
+            let input = message[1] // data yg diinput user
+            // console.log(input)
             // jika user memasukan data
             bot.sendMessage(chatId, responWait(input))
 
             // validasi data yg di inputkan terdaftar atau tidak
             // console.log(akun)
-            cekUser(input)
+            cekUser(input).then(() => console.log(akun))
+            // console.log(akun)
             // jika user ditemukan
 
             // jika user tidak ditemukan
@@ -121,11 +120,18 @@ bot.on('message', (msg) => {
                 // jika data lengkap, lakukan validasi
                 bot.sendMessage(chatId, responWait(user))
                 try {
-                    createUser(user, pass, api, chatId)
-                    return bot.sendMessage(chatId, `berhasil membuat akun ${user}`)
+                    cekUser(user).then((result) => {
+                        // console.log(result)
+                        if (result === null) {
+                            createUser(user, pass)
+                            return bot.sendMessage(chatId, `berhasil membuat akun ${user}`)
+                        } else {
+                            return bot.sendMessage(chatId, `Username ${user} sudah digunakan, silahkan gunakan username lain`)
+                        }
+                    })
 
                 } catch (error) {
-
+                    console.log(error)
                 }
 
             } else {
