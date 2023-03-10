@@ -10,6 +10,7 @@ dotenv.config()
 import {
     responBadFormat,
     responCekData,
+    responCreateSuccess,
     responInvalidData,
     responStart,
     responWait
@@ -42,10 +43,27 @@ const cekPort = async (remoteAddress) => {
 
         api.close()
 
-        let ports = []
+        let ports = {}
 
         firewalls.map((firewall) => {
-            ports.push(firewall.dstPort)
+            switch (firewall.toPorts) {
+                case 80:
+                    ports.webfix = firewall.dstPort
+                    break
+                case 8291:
+                    ports.winbox = firewall.dstPort
+                    break
+                case 8728:
+                    ports.api = firewall.dstPort
+                    break
+                case 22:
+                    ports.ssh = firewall.dstPort
+                    break
+                case 2000:
+                    ports.custom = firewall.dstPort
+                    break
+            }
+
         })
 
         return ports
@@ -70,8 +88,8 @@ const createPort = async (port, remoteAddress, user) => {
     try {
         const client = await api.connect();
 
-        const minPort = 999
-        const maxPort = 65000
+        const minPort = 1001
+        const maxPort = 9999
 
         let randomPort = Math.floor(Math.random() * (maxPort - minPort + 1)) + minPort
 
@@ -208,7 +226,7 @@ bot.on('message', (msg) => {
                     cekUser(user).then((result) => {
                         if (result === null) {
                             createUser(user, pass)
-                            return bot.sendMessage(chatId, `berhasil membuat akun ${user}`)
+                            return bot.sendMessage(chatId, responCreateSuccess(user, pass))
                         } else {
                             return bot.sendMessage(chatId, `Username ${user} sudah digunakan, silahkan gunakan username lain`)
                         }

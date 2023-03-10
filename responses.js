@@ -1,9 +1,12 @@
+import * as dotenv from 'dotenv'
+dotenv.config()
+
 export const responStart = () => {
   return `
 🙏 Selamat Datang di VPN EKA 🙏
 (Ethernet Keep Alive)
   
-Panduan lengkap VPN Remote Gratis : http://bit.ly/gratis-vpn-remote
+  BETA!!!
           
   Buat VPN :
   /create username.password
@@ -40,15 +43,39 @@ export const responCekData = (name, ports) => {
 ===================
 Informasi VPN Remote
 ===================
-Connect To : vpn.teleka.my.id
+Connect To : 103.236.201.28
 Username : ${name}
 
 ===Daftar port yang bisa digunakan===
-Webfix 80 : vpn.teleka.my.id:${ports[0]}
-Winbox 8291 : vpn.teleka.my.id:${ports[4]}
-API 8728 : vpn.teleka.my.id:${ports[3]}
-SSH 22 : vpn.teleka.my.id:${ports[2]}
-Custom 2000 : vpn.teleka.my.id:${ports[1]}
+Webfix 80 : 103.236.201.28:${ports.webfix}
+Winbox 8291 : 103.236.201.28:${ports.winbox}
+API 8728 : 103.236.201.28:${ports.api}
+SSH 22 : 103.236.201.28:${ports.ssh}
+Custom 2000 : 103.236.201.28:${ports.custom}
+
+Bisa langganan harian, mingguan, bulanan !!!
+VPN Remote Gratis | VPN Game ML Gratis | 
+VPN Sosmed | VPN Trafik | VPN Game | 
+Mikhmon Online | Jasa Setting | Konsultasi
+Open Reseller!!!
+   
+📞 WA : wa.me/6282153393216
+🍹 Donasi : saweria.co/ekamhryn`
+}
+
+export const responCreateSuccess = (username, password) => {
+  return `
+==================
+Akun berhasil dibuat
+==================
+Connect To : ${process.env.URL_CHR}
+Username : ${username}
+Password : ${password}
+Akun VPN remote akan dihapus secara otomatis jika sudah tidak digunakan
+
+=== Script terminal mikrotik ===
+L2TP (copy semua)
+/interface l2tp-client add connect=${process.env.URL_CHR} name=VPN-EKA-REMOTE-L2TP comment="vpn.teleka.my.id | wa.me/6282153393216 | Ready VPN Remote, VPN Game, VPN Trafik, Mikhmon Online" user=${username} pass=${password} disable=no
 
 Bisa langganan harian, mingguan, bulanan !!!
 VPN Remote Gratis | VPN Game ML Gratis | 
