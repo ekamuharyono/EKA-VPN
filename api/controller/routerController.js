@@ -11,7 +11,7 @@ export const cekPort = async (remoteAddress) => {
     host: process.env.IP_CHR,
     user: process.env.LOGIN_CHR,
     password: process.env.PASSWORD_CHR,
-    port: process.env.PORT_CHR,
+    port: process.env.PORT_CHR || 8728,
   });
 
   try {
@@ -60,7 +60,7 @@ export const createPort = async (port, remoteAddress, user) => {
     host: process.env.IP_CHR,
     user: process.env.LOGIN_CHR,
     password: process.env.PASSWORD_CHR,
-    port: process.env.PORT_CHR,
+    port: process.env.PORT_CHR || 8728,
   });
 
   const minPort = 999
@@ -98,7 +98,7 @@ export const cekUser = async (user) => {
     host: process.env.IP_CHR,
     user: process.env.LOGIN_CHR,
     password: process.env.PASSWORD_CHR,
-    port: process.env.PORT_CHR,
+    port: process.env.PORT_CHR || 8728,
   });
 
   let akun
@@ -124,7 +124,7 @@ export const createUser = async (user, pass) => {
     host: process.env.IP_CHR,
     user: process.env.LOGIN_CHR,
     password: process.env.PASSWORD_CHR,
-    port: process.env.PORT_CHR,
+    port: process.env.PORT_CHR || 8728,
   });
 
   try {
