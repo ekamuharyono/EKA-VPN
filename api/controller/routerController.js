@@ -115,7 +115,7 @@ export const cekUser = async (user) => {
       name: user,
     });
 
-    return akun◘
+    return akun
     api.close();
 
   } catch (err) {
