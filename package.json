@@ -16,7 +16,6 @@
   "dependencies": {
     "dotenv": "^16.0.3",
     "express": "^4.17.3",
-    "mikro-client": "^0.5.3",
     "routeros-client": "^1.1.2",
     "telegraf": "^4.7.0"
   }
