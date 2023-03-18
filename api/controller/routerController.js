@@ -5,13 +5,18 @@ import {
 
 dotenv.config()
 
+const IP_CHR = process.env.IP_CHR
+const LOGIN_CHR = process.env.LOGIN_CHR
+const PASSWORD_CHR = process.env.PASSWORD_CHR
+const PORT_CHR = process.env.PORT_CHR || 8728
+
 export const cekPort = async (remoteAddress) => {
 
   const api = new RouterOSClient({
-    host: process.env.IP_CHR,
-    user: process.env.LOGIN_CHR,
-    password: process.env.PASSWORD_CHR,
-    port: process.env.PORT_CHR,
+    host: IP_CHR,
+    user: LOGIN_CHR,
+    password: PASSWORD_CHR,
+    port: PORT_CHR,
   });
 
   try {
@@ -57,10 +62,10 @@ export const cekPort = async (remoteAddress) => {
 export const createPort = async (port, remoteAddress, user) => {
 
   const api = new RouterOSClient({
-    host: process.env.IP_CHR,
-    user: process.env.LOGIN_CHR,
-    password: process.env.PASSWORD_CHR,
-    port: process.env.PORT_CHR,
+    host: IP_CHR,
+    user: LOGIN_CHR,
+    password: PASSWORD_CHR,
+    port: PORT_CHR,
   });
 
   const minPort = 999
@@ -76,7 +81,7 @@ export const createPort = async (port, remoteAddress, user) => {
 
     const result = await client.menu('/ip firewall nat').add({
       chain: "dstnat",
-      dstAddress: process.env.IP_CHR,
+      dstAddress: IP_CHR,
       protocol: "tcp",
       dstPort: randomPort,
       action: "dst-nat",
@@ -95,10 +100,10 @@ export const createPort = async (port, remoteAddress, user) => {
 export const cekUser = async (user) => {
 
   const api = new RouterOSClient({
-    host: process.env.IP_CHR,
-    user: process.env.LOGIN_CHR,
-    password: process.env.PASSWORD_CHR,
-    port: process.env.PORT_CHR,
+    host: IP_CHR,
+    user: LOGIN_CHR,
+    password: PASSWORD_CHR,
+    port: PORT_CHR,
   });
 
   let akun
@@ -110,8 +115,8 @@ export const cekUser = async (user) => {
       name: user,
     });
 
+    return akun◘
     api.close();
-    return akun
 
   } catch (err) {
     console.log(err);
@@ -121,10 +126,10 @@ export const cekUser = async (user) => {
 export const createUser = async (user, pass) => {
 
   const api = new RouterOSClient({
-    host: process.env.IP_CHR,
-    user: process.env.LOGIN_CHR,
-    password: process.env.PASSWORD_CHR,
-    port: process.env.PORT_CHR,
+    host: IP_CHR,
+    user: LOGIN_CHR,
+    password: PASSWORD_CHR,
+    port: PORT_CHR,
   });
 
   try {
